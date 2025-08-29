@@ -16,6 +16,8 @@ app.get('/api/usuarios', async (req, res) => {
   }
 });
 
+
+//ruta para registrar paciente
 app.post('/api/registro/paciente', async (req, res) => {
   const {nombre, email, contraseña, fecha_nacimiento, nombre_usuario, numero_telefono, estatura, peso, tipo_sangre, alergias} = req.body; //desestructuración de objetos, lo que viene en el req.body se mapea a cada una de las variables definidas
   const rol = 'Paciente';
@@ -80,6 +82,7 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
+//ruta para obtener servicios
 app.get('/api/servicios', async (req, res) => {
   try {
     const resultado = await db.query('SELECT * FROM servicios ORDER BY nombre_servicio ASC')
@@ -87,6 +90,43 @@ app.get('/api/servicios', async (req, res) => {
   } catch (error) {
     console.error(error)
     res.status(500).json({error: 'Error al obtener los servicios'})
+  }
+})
+
+//ruta para obtener doctores que realizan un servicio
+app.get('/api/doctores/por-servicio/:servicioId', async (req, res) => {
+  const {servicioId} = req.params;
+  try {
+    const resultado  = await db.query('SELECT d.id AS doctor_id, u.nombre, d.especialidad FROM doctores_servicios AS ds JOIN doctores AS d ON ds.id_doctor = d.id JOIN usuarios AS u ON d.id_usuario = u.id where id_servicio = $1', [servicioId]);
+    if(resultado.rows.length == 0){
+      return res.status(404).json({message: 'No se encontraron doctores para este servicio'})
+    }
+
+    res.status(200).json(resultado.rows)
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error al obtener la lista de doctores.' });
+  }
+})
+
+//ruta para que un doctor administre la disponibilidad de su agenda
+app.put('/api/doctores/:doctor_id/disponibilidad', async (req, res) => {
+  const {doctor_id} = req.params
+  const {fecha, horarios} = req.body
+
+  if(!fecha || !horarios || !Array.isArray(horarios)){
+    return res.status(400).json({error: 'Datos de entrada no válidos'})
+  }
+
+  try {
+    //ON CONFLICT nos sirve para validar si la combinacion de doctor_id y fecha ya existe, en caso de que sí, actualiza horarios, y si no, crea el registro. Esto es una propiedad de PostgreSQL que junto con el UNIQUE que se realizó al crear la tabla hace que se haga la validación
+    const result = await db.query('INSERT INTO disponibilidad (doctor_id, fecha, horarios) VALUES  ($1, $2, $3) ON CONFLICT (doctor_id, fecha) DO UPDATE SET horarios = $3 RETURNING *;', [doctor_id, fecha, JSON.stringify(horarios)]);
+
+    res.status(200).json(result.rows[0]);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error al actualizar la disponibilidad.' });
   }
 })
 
