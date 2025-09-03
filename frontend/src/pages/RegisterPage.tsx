@@ -1,0 +1,55 @@
+import React, { useState } from 'react';
+
+const RegisterPage = () => {
+  const [nombre, setNombre] = useState('');
+  const [email, setEmail] = useState('');
+  const [contraseña, setContraseña] = useState('');
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log('Datos de registro:', { nombre, email, contraseña });
+    // Aquí es donde irá la lógica para conectar con el backend.
+    // Usaremos la ruta que creaste: POST /api/registro/paciente
+  };
+
+  return (
+    <div>
+      <h1>Registro</h1>
+      <form onSubmit={handleSubmit}>
+        <div>
+          <label htmlFor="nombre">Nombre:</label>
+          <input
+            type="text"
+            id="nombre"
+            value={nombre}
+            onChange={(e) => setNombre(e.target.value)}
+            required
+          />
+        </div>
+        <div>
+          <label htmlFor="email">Email:</label>
+          <input
+            type="email"
+            id="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+        </div>
+        <div>
+          <label htmlFor="contraseña">Contraseña:</label>
+          <input
+            type="password"
+            id="contraseña"
+            value={contraseña}
+            onChange={(e) => setContraseña(e.target.value)}
+            required
+          />
+        </div>
+        <button type="submit">Registrarse</button>
+      </form>
+    </div>
+  );
+};
+
+export default RegisterPage;
