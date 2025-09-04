@@ -7,7 +7,7 @@ import NavBar from './components/NavBar';
 function App() {
   return (
      
-      <div className="flex flex-col min-h-screen font-sans antialiased bg-gray-100">
+      <div className="flex flex-col min-h-screen font-sans antialiased bg-gray-100 ">
         <NavBar />
         
         {/* Contenedor principal que centra el contenido de las rutas */}

@@ -12,7 +12,7 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    <div className="flex items-center justify-center bg-gray-100">
       <div className="w-full max-w-md p-8 space-y-8 bg-white rounded-xl shadow-lg">
         <h1 className="text-center text-3xl font-extrabold text-[#0F4C81]">
           Iniciar Sesión
@@ -58,10 +58,15 @@ const LoginPage = () => {
           <div>
             <button
               type="submit"
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-[#0F4C81] hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0F4C81] transition-colors"
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md
+             text-white bg-[#0F4C81] 
+             hover:[background-color:#0a3861ff] hover:scale-105 
+             focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0F4C81] 
+             transition duration-300 transform "
             >
               Iniciar Sesión
             </button>
+
           </div>
         </form>
 
@@ -69,7 +74,7 @@ const LoginPage = () => {
         <div className="text-center text-sm">
           <p className="text-gray-600">
             ¿No tienes una cuenta?{' '}
-            <Link to="/registro" className="font-medium text-[#1E8854] hover:text-[#0f4c81] transition-colors">
+            <Link to="/registro" className="inline-block font-medium text-[#1E8854] hover:scale-102 hover:text-[#0F4C81] transition-all duration-300 transform ">
               Regístrate aquí
             </Link>
           </p>
