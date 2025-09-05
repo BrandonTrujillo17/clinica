@@ -1,3 +1,12 @@
 Color principal azul: #0F4C81  navbar, botones principales, titulos, etc
 Color secundario verde: #0a3861ff 4942ff botones secundarios, hovers, enlaces
 Color verde: #1E8854 para hovers en blanco y otros botones
+bg-gray-300 hover:bg-gray-400 boton atrás
+
+
+instale las siguientes extensiones en vscode:
+Tailwind CSS intelillense
+ES7 react/Redux
+headwind - ordena clases de tailwind logicamente
+error lens
+Eslint
