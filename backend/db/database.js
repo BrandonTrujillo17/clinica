@@ -1,13 +1,15 @@
-const { Pool } = require('pg');
+import pkg from "pg";
+const { Pool } = pkg;
 
 const pool = new Pool({
-  user: 'postgres', // Tu nombre de usuario de PostgreSQL
-  host: 'localhost', // O la IP del servidor de la base de datos
-  database: 'citas_clinica', // El nombre de la base de datos de la clínica
-  password: '12345678', // La contraseña de tu usuario
-  port: 5432, // El puerto por defecto de PostgreSQL
+  user: 'neondb_owner',
+  host: 'ep-lively-term-adjpqp57-pooler.c-2.us-east-1.aws.neon.tech',
+  database: 'citas_clinica',
+  password: 'npg_1nl2MVFhHkyK',
+  port: 5432,
+  ssl: { rejectUnauthorized: false },
 });
 
-module.exports = {
+export const db = {
   query: (text, params) => pool.query(text, params),
 };

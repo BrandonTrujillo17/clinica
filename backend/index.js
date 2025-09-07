@@ -1,9 +1,11 @@
-const express = require('express');
-const db = require('./db/database'); // Importa la conexión a la base de datos
-const bcrypt = require('bcryptjs');
+import express from "express";
+import cors from "cors";
+import bcrypt from "bcryptjs";
+import { db } from "./db/database.js";
 
 const app = express();
 app.use(express.json());
+app.use(cors());
 const port = 3000;
 
 app.get('/api/usuarios', async (req, res) => {
@@ -22,9 +24,16 @@ app.post('/api/registro/paciente', async (req, res) => {
   const {nombre, email, contraseña, fecha_nacimiento, nombre_usuario, numero_telefono, estatura, peso, tipo_sangre, alergias} = req.body; //desestructuración de objetos, lo que viene en el req.body se mapea a cada una de las variables definidas
   const rol = 'Paciente';
 
-   console.log('Valores a insertar:', [nombre, email, contraseña, rol, nombre_usuario, numero_telefono]);
-
   try{
+    const existeEmail = await db.query('SELECT id FROM usuarios where email = $1', [email])
+    if(existeEmail.rows.length > 0){
+      return res.status(400).json({message:"El email ya está registrado, por favor introduzca otro"})
+    }
+
+    const existeUsuario = await db.query('SELECT id FROM usuarios where nombre_usuario = $1', [nombre_usuario])
+    if(existeUsuario.rows.length > 0){
+      return res.status(400).json({message: "El usuario ya se encuentra registrado"})
+    }
 
     const encriptacion = await bcrypt.genSalt(10);
     const contraseñaEcriptada = await bcrypt.hash(contraseña, encriptacion);

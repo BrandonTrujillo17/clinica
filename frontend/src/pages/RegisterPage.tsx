@@ -1,43 +1,67 @@
 import React, { useState } from "react";
 import Modal from "../components/Modal";
+import { useNavigate } from "react-router-dom";
+import Loading from "../components/Loading";
 
 const RegisterPage = () => {
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
   const [step, setStep] = useState(1);
 
   const [nombre, setNombre] = useState("");
   const [email, setEmail] = useState("");
   const [numero_telefono, setTelefono] = useState("");
   const [fecha_nacimiento, setFechaNacimiento] = useState("");
-  const [estatura, setEstatura] = useState("");
-  const [peso, setPeso] = useState("");
-  const [tipo_sangre, setTipoSangre] = useState("");
-  const [alergias, setAlergias] = useState("");
+  const [estatura, setEstatura] = useState<number | null>(null);
+  const [peso, setPeso] = useState<number | null>(null);
+  const [tipo_sangre, setTipoSangre] = useState<string | null>(null);
+  const [alergias, setAlergias] = useState<string | null>(null);
 
   const [nombre_usuario, setNombreUsuario] = useState("");
   const [contraseña, setContraseña] = useState("");
 
   const [modal, setModal] = useState<{ message: string; type: "error" | "success" } | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!nombre || !email) {
-      setModal({ message: "Por favor completa todos los campos obligatorios", type: "error" });
+    if (!nombre || !email || !numero_telefono || !fecha_nacimiento || !nombre_usuario || !contraseña) {
+      setModal({ message: "Por favor llene los campos obligatorios marcados con *", type: "error" });
       return;
     }
-    setModal({ message: "Registro exitoso", type: "success" });
 
-    console.log("Datos de registro:", {
-      nombre,
-      email,
-      numero_telefono,
-      fecha_nacimiento,
-      estatura,
-      peso,
-      tipo_sangre,
-      alergias,
-      nombre_usuario,
-      contraseña,
-    });
+    try {
+      setLoading(true)
+      const response = await fetch("/api/registro/paciente", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          nombre,
+          email,
+          numero_telefono,
+          fecha_nacimiento,
+          estatura,
+          peso,
+          tipo_sangre,
+          alergias,
+          nombre_usuario,
+          contraseña,
+        })
+      })
+
+      const data = await response.json()
+      if (response.ok) {
+        setModal({ message: data.message, type: "success" })
+        setTimeout(() => navigate("/login"), 3000)
+      } else {
+        setModal({ message: data.message, type: "error" })
+      }
+    } catch (error) {
+      console.log(error)
+      setModal({ message: "Error de conexión con el servidor", type: "error" })
+    } finally {
+      setLoading(false)
+    }
+
   };
 
   return (
@@ -58,7 +82,7 @@ const RegisterPage = () => {
           {step === 1 && (
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
               <div>
-                <label className="block text-sm font-medium text-gray-700">Nombre completo</label>
+                <label className="block text-sm font-medium text-gray-700">Nombre completo <span className="text-red-500">*</span></label>
                 <input
                   type="text"
                   value={nombre}
@@ -69,7 +93,7 @@ const RegisterPage = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700">Email</label>
+                <label className="block text-sm font-medium text-gray-700">Email <span className="text-red-500">*</span></label>
                 <input
                   type="email"
                   value={email}
@@ -80,7 +104,7 @@ const RegisterPage = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700">Teléfono</label>
+                <label className="block text-sm font-medium text-gray-700">Teléfono <span className="text-red-500">*</span></label>
                 <input
                   type="tel"
                   value={numero_telefono}
@@ -91,7 +115,7 @@ const RegisterPage = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700">Fecha de nacimiento</label>
+                <label className="block text-sm font-medium text-gray-700">Fecha de nacimiento <span className="text-red-500">*</span></label>
                 <input
                   type="date"
                   value={fecha_nacimiento}
@@ -106,8 +130,8 @@ const RegisterPage = () => {
                 <input
                   type="number"
                   min={1}
-                  value={estatura}
-                  onChange={(e) => setEstatura(e.target.value)}
+                  value={estatura ?? ""}
+                  onChange={(e) => setEstatura(e.target.value ? Number(e.target.value) : null)}
                   required
                   className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-[#1E8854] focus:border-[#1E8854] focus:z-10"
                 />
@@ -117,8 +141,9 @@ const RegisterPage = () => {
                 <label className="block text-sm font-medium text-gray-700">Peso (kg)</label>
                 <input
                   type="number"
-                  value={peso}
-                  onChange={(e) => setPeso(e.target.value)}
+                  min={1}
+                  value={peso ?? ""}
+                  onChange={(e) => setPeso(e.target.value ? Number(e.target.value) : null)}
                   required
                   className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-[#1E8854] focus:border-[#1E8854] focus:z-10"
                 />
@@ -128,8 +153,8 @@ const RegisterPage = () => {
                 <label className="block text-sm font-medium text-gray-700">Tipo de sangre</label>
                 <input
                   type="text"
-                  value={tipo_sangre}
-                  onChange={(e) => setTipoSangre(e.target.value)}
+                  value={tipo_sangre ?? ""}
+                  onChange={(e) => setTipoSangre(e.target.value ? e.target.value : null)}
                   className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-[#1E8854] focus:border-[#1E8854] focus:z-10"
                 />
               </div>
@@ -137,8 +162,8 @@ const RegisterPage = () => {
               <div className="md:col-span-2">
                 <label className="block text-sm font-medium text-gray-700">Alergias</label>
                 <textarea
-                  value={alergias}
-                  onChange={(e) => setAlergias(e.target.value)}
+                  value={alergias ?? ""}
+                  onChange={(e) => setAlergias(e.target.value ? e.target.value : null)}
                   rows={3}
                   className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-[#1E8854] focus:border-[#1E8854] focus:z-10"
                 />
@@ -160,7 +185,7 @@ const RegisterPage = () => {
           {step === 2 && (
             <div className="space-y-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700">Nombre de usuario</label>
+                <label className="block text-sm font-medium text-gray-700">Nombre de usuario <span className="text-red-500">*</span></label>
                 <input
                   type="text"
                   value={nombre_usuario}
@@ -170,7 +195,7 @@ const RegisterPage = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700">Contraseña</label>
+                <label className="block text-sm font-medium text-gray-700">Contraseña <span className="text-red-500">*</span></label>
                 <input
                   type="password"
                   value={contraseña}
@@ -199,6 +224,7 @@ const RegisterPage = () => {
           )}
         </form>
       </div>
+      <Loading show={loading} />
       {modal && (
         <Modal
           message={modal.message}
