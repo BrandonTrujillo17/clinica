@@ -2,7 +2,13 @@ import { Link } from 'react-router-dom';
 import { useAuth } from "../context/AuthContext";
 
 const NavBar = () => {
-  const { user, logout } = useAuth();
+  const { usuario, logout } = useAuth();
+  const iniciales = usuario
+    ? usuario.nombre
+        .split(" ")
+        .map((n) => n[0].toUpperCase())
+        .join("")
+    : "";
 
   return (
 
@@ -13,7 +19,7 @@ const NavBar = () => {
           to="/"
           className="text-2xl font-bold tracking-wide hover:scale-110 transition-all duration-300 transform"
         >
-          <span className="text-white">CLINSYS</span>{" "}
+          <span className="text-white">CLINSYS</span>
 
         </Link>
 
@@ -25,7 +31,7 @@ const NavBar = () => {
           >
             Inicio
           </Link>
-          {!user && (
+          {!usuario && (
             <>
               <Link
                 to="/login"
@@ -43,31 +49,36 @@ const NavBar = () => {
             </>
           )}
 
-          {user && user.role === 'Admin' && (
-            <Link to="/admin" className="hover:text-gray-200 transition-colors">
+          {usuario && usuario.rol === 'Admin' && (
+            <Link to="/admin" className="font-medium hover:scale-110 transition-all duration-300 transform">
               Panel Admin
             </Link>
           )}
 
-          {user && user.role === 'Doctor' && (
-            <Link to="/doctor" className='hover:text-gray-200 transition-colors'>
+          {usuario && usuario.rol === 'Doctor' && (
+            <Link to="/doctor" className='font-medium hover:scale-110 transition-all duration-300 transform'>
               Panel Doctor
             </Link>
           )}
 
-          {user && user.role === 'Paciente' && (
-            <Link to="/paciente" className='hover:text-gray-200 transition-colors'>
+          {usuario && usuario.rol === 'Paciente' && (
+            <Link to="/paciente" className='font-medium hover:scale-110 transition-all duration-300 transform'>
               Panel Paciente
             </Link>
           )}
 
-          {user && (
-            <button
-              onClick={logout}
-              className="ml-4 hover:text-gray-200 transition-colors"
-            >
-              Cerrar Sesión
-            </button>
+          {usuario && (
+            <>
+              <button
+                onClick={logout}
+                className="ml-6 font-medium hover:scale-110 transition-all duration-300 transform"
+              >
+                Cerrar Sesión
+              </button>
+              {/* <div className=" w-10 h-10 rounded-full bg-gray-200 text-blue-800 flex items-center justify-center font-bold">
+                {iniciales}
+              </div> */}
+            </>
           )}
         </div>
       </div>

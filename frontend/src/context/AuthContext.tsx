@@ -1,28 +1,45 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 import type { ReactNode } from "react";
 
-interface User {
+interface Usuario {
   id: number;
-  name: string;
-  role: "Admin" | "Doctor" | "Paciente";
+  nombre: string;
+  rol: "Admin" | "Doctor" | "Paciente";
 }
 
 interface AuthContextType {
-  user: User | null;
-  login: (user: User) => void;
+  usuario: Usuario | null;
+  login: (user: Usuario) => void;
   logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [usuario, setUsuario] = useState<Usuario | null>(null);
 
-  const login = (user: User) => setUser(user);
-  const logout = () => setUser(null);
+  // Cargar usuario desde localStorage al inicio
+  useEffect(() => {
+    const savedUser = localStorage.getItem("usuario");
+    if (savedUser) {
+      setUsuario(JSON.parse(savedUser));
+    }
+  }, []);
+
+  // Guardar usuario en localStorage al iniciar sesión
+  const login = (user: Usuario) => {
+    setUsuario(user);
+    localStorage.setItem("usuario", JSON.stringify(user));
+  };
+
+  // Borrar usuario de estado y localStorage
+  const logout = () => {
+    setUsuario(null);
+    localStorage.removeItem("usuario");
+  };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ usuario, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
