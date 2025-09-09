@@ -12,7 +12,7 @@ function App() {
         <NavBar />
         
         {/* Contenedor principal que centra el contenido de las rutas */}
-        <main className="flex-grow flex items-center justify-center">
+        <main className="flex-grow flex justify-center">
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<LoginPage />} />

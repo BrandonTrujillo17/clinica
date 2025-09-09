@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Calendar, ClipboardList, Activity, Stethoscope } from "lucide-react";
+import { Calendar, ClipboardList, Activity, Stethoscope } from  "lucide-react";
 
 const DashboardPaciente = () => {
   const navigate = useNavigate();
