@@ -74,16 +74,16 @@ const LoginPage = () => {
           {/* Campos del formulario */}
           <div className="rounded-md shadow-sm -space-y-px">
             <div>
-              <label htmlFor="email" className="sr-only">
-                Email
+              <label htmlFor="nombre_usuario" className="sr-only">
+                Usuario
               </label>
               <input
-                id="email"
-                name="email"
+                id="nombre_usuario"
+                name="nombre_usuario"
                 type="text"
-                autoComplete="email"
+                autoComplete="nombre_usuario"
                 className="relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-[#1E8854] focus:border-[#1E8854] focus:z-10 sm:text-sm"
-                placeholder="Dirección de email"
+                placeholder="Nombre de usuario"
                 value={nombre_usuario}
                 onChange={(e) => setNombreUsuario(e.target.value)}
               />

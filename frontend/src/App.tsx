@@ -4,7 +4,7 @@ import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
 import NavBar from './components/NavBar';
 import Dashboard from './pages/Dashboard';
-
+import ServiciosDisponibles from './pages/ServiciosDisponibles';
 function App() {
   return (
      
@@ -18,6 +18,7 @@ function App() {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/registro" element={<RegisterPage />} />
             <Route path="/dashboard" element={<Dashboard/>}/>
+            <Route path="/servicios_disponibles" element={<ServiciosDisponibles/>}/> 
           </Routes>
         </main>
       </div>

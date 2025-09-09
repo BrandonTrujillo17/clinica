@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import DashboardPaciente from "../components/DashboardPaciente";
 
 const Dashboard = () => {
     const navigate = useNavigate();
@@ -13,16 +14,11 @@ const Dashboard = () => {
 
     return (
         <div className="p-6">
-            <h1 className="text-2xl font-bold">
+            {/* <h1 className="text-2xl font-bold text-center">
                 Bienvenido {usuario.nombre} 👋
-            </h1>
+            </h1> */}
 
-            {usuario.rol === "Paciente" && (
-                <div>
-                    <button onClick={() => navigate("/citas")}>Mis citas</button>
-                    <button onClick={() => navigate("/historial")}>Historial médico</button>
-                </div>
-            )}
+            {usuario.rol === "Paciente" && <DashboardPaciente/>}
 
             {usuario.rol === "Doctor" && (
                 <div>
