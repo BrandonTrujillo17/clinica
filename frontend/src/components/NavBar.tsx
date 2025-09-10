@@ -61,9 +61,17 @@ const NavBar = () => {
           )}
 
           {usuario?.rol === "Doctor" && (
-            <Link to="/doctor" className="font-medium hover:scale-110 transition-all duration-300 transform">
-              Panel Doctor
-            </Link>
+            <>
+              <Link to="/agenda" className="font-medium hover:scale-110 transition-all duration-300 transform">
+                Agenda
+              </Link>
+              <Link to="/servicios_disponibles" className="font-medium hover:scale-110 transition-all duration-300 transform">
+                Servicios
+              </Link>
+              <Link to="/pacientes" className="font-medium hover:scale-110 transition-all duration-300 transform">
+                Pacientes
+              </Link>
+            </>
           )}
 
           {usuario?.rol === "Paciente" && (
@@ -108,7 +116,13 @@ const NavBar = () => {
           )}
 
           {usuario?.rol === "Admin" && <Link to="/admin" className="hover:scale-110 transition-all duration-300 transform">Panel Admin</Link>}
-          {usuario?.rol === "Doctor" && <Link to="/doctor" className="hover:scale-110 transition-all duration-300 transform">Panel Doctor</Link>}
+          {usuario?.rol === "Doctor" && (
+             <>
+              <Link to="/agenda" className="font-medium hover:scale-110 transition-all duration-300 transform">Agenda</Link>
+              <Link to="/servicios_disponibles" className="font-medium hover:scale-110 transition-all duration-300 transform">Servicios</Link>
+              <Link to="/pacientes" className="font-medium hover:scale-110 transition-all duration-300 transform">Pacientes</Link>
+            </>
+          )}
           {usuario?.rol === "Paciente" && (
             <>
               <Link to="/citas" className="hover:scale-110 transition-all duration-300 transform">Mis citas</Link>

@@ -29,7 +29,7 @@ const ServiciosDisponibles = () => {
     fetchServicios();
   }, []);
 
-  if (loading) return <div className="pt-95"><p className="text-center text-gray-500">Cargando servicios...</p></div>;
+  if (loading) return <div className="pt-85"><p className="text-center text-gray-500">Cargando servicios...</p></div>;
 
   return (
     <div className="p-8">

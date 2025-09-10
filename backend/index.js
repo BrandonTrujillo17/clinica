@@ -8,6 +8,8 @@ app.use(express.json());
 app.use(cors());
 const port = 3000;
 
+//________________________________________________USUARIOS_____________________________________________
+//endpoint para obtener usuarios
 app.get('/api/usuarios', async (req, res) => {
   try {
     const result = await db.query('SELECT * FROM usuarios');
@@ -18,8 +20,37 @@ app.get('/api/usuarios', async (req, res) => {
   }
 });
 
+app.post('/api/login', async (req, res) => {
+  const {nombre_usuario, contraseña} = req.body
 
-//ruta para registrar paciente
+  try {
+    const resultadoUsuario = await db.query('SELECT * FROM usuarios WHERE nombre_usuario = $1', [nombre_usuario]);
+    const usuario = resultadoUsuario.rows[0];
+    
+    if(!usuario){
+      return res.status(401).json({error: "Usuario no encontrado"})
+    }
+
+    const contraseñaCoincide = await bcrypt.compare(contraseña, usuario.contraseña)
+
+    if(!contraseñaCoincide){
+      return res.status(401).json({error: 'Contraseña invalida'})
+    }
+
+    res.status(200).json({
+      message: 'Bienvenido ' + usuario.nombre,
+      id: usuario.id,
+      rol: usuario.rol,
+      nombre: usuario.nombre
+    })
+  } catch (error) {
+    console.error(error)
+    res.status(500).json({error: 'Error en el servidor'})
+  }
+});
+
+//________________________________________________PACIENTES_____________________________________________
+//endpoint para registrar paciente
 app.post('/api/registro/paciente', async (req, res) => {
   const {nombre, email, contraseña, fecha_nacimiento, nombre_usuario, numero_telefono, estatura, peso, tipo_sangre, alergias} = req.body; //desestructuración de objetos, lo que viene en el req.body se mapea a cada una de las variables definidas
   const rol = 'Paciente';
@@ -62,36 +93,8 @@ app.post('/api/registro/paciente', async (req, res) => {
   }
 });
 
-app.post('/api/login', async (req, res) => {
-  const {nombre_usuario, contraseña} = req.body
-
-  try {
-    const resultadoUsuario = await db.query('SELECT * FROM usuarios WHERE nombre_usuario = $1', [nombre_usuario]);
-    const usuario = resultadoUsuario.rows[0];
-    
-    if(!usuario){
-      return res.status(401).json({error: "Usuario no encontrado"})
-    }
-
-    const contraseñaCoincide = await bcrypt.compare(contraseña, usuario.contraseña)
-
-    if(!contraseñaCoincide){
-      return res.status(401).json({error: 'Contraseña invalida'})
-    }
-
-    res.status(200).json({
-      message: 'Bienvenido ' + usuario.nombre,
-      id: usuario.id,
-      rol: usuario.rol,
-      nombre: usuario.nombre
-    })
-  } catch (error) {
-    console.error(error)
-    res.status(500).json({error: 'Error en el servidor'})
-  }
-});
-
-//ruta para obtener servicios
+//________________________________________________SERVICIOS_____________________________________________
+//endpoint para obtener servicios
 app.get('/api/servicios', async (req, res) => {
   try {
     const resultado = await db.query('SELECT * FROM servicios ORDER BY nombre_servicio ASC')
@@ -102,7 +105,8 @@ app.get('/api/servicios', async (req, res) => {
   }
 })
 
-//ruta para obtener doctores que realizan un servicio
+//________________________________________________DOCTORES______________________________________________
+//endpoint para obtener doctores que realizan un servicio
 app.get('/api/doctores/por-servicio/:servicioId', async (req, res) => {
   const {servicioId} = req.params;
   try {
@@ -118,8 +122,50 @@ app.get('/api/doctores/por-servicio/:servicioId', async (req, res) => {
     res.status(500).json({ error: 'Error al obtener la lista de doctores.' });
   }
 })
+//endpoint para registrar doctores
+app.post('/api/registro/doctor', async (req, res) => {
+  const {nombre, email, numero_telefono, nombre_usuario, contraseña, especialidad, cedula_profesional} = req.body
+  const rol = "Doctor"
 
-//ruta para que un doctor administre la disponibilidad de su agenda
+  try {
+    const existeEmail = await db.query('SELECT id FROM usuarios where email = $1', [email])
+    if(existeEmail.rows.length > 0){
+      return res.status(400).json({message:"El email ya está registrado, por favor introduzca otro"})
+    }
+
+    const existeUsuario = await db.query('SELECT id FROM usuarios where nombre_usuario = $1', [nombre_usuario])
+    if(existeUsuario.rows.length > 0){
+      return res.status(400).json({message: "El usuario ya se encuentra registrado"})
+    }
+
+    const encriptacion = await bcrypt.genSalt(10);
+    const contraseñaEcriptada = await bcrypt.hash(contraseña, encriptacion);
+    await db.query("BEGIN");
+
+    const resultadoUsuario = await db.query(
+      'INSERT INTO usuarios (nombre, email, contraseña, rol, nombre_usuario, numero_telefono) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id', 
+      [nombre, email, contraseñaEcriptada, rol, nombre_usuario, numero_telefono]
+    );
+
+    const usuario_id = resultadoUsuario.rows[0].id;
+
+    await db.query(
+      'INSERT INTO doctores (especialidad, id_usuario, cedula_profesional) VALUES ($1, $2, $3)', 
+      [especialidad, usuario_id, cedula_profesional]
+    );
+
+    await db.query("COMMIT");
+
+    res.status(201).json({message: "Médico registrado exitosamente"});
+  } catch (error) {
+    await db.query('ROLLBACK');
+    console.log(error);
+    res.status(500).json({message: "Error al registrar al Doctor"});
+  }
+})
+
+//_________________________________________________AGENDA________________________________________________
+//endpoint para que un doctor administre la disponibilidad de su agenda
 app.put('/api/doctores/:doctor_id/disponibilidad', async (req, res) => {
   const {doctor_id} = req.params
   const {fecha, horarios} = req.body

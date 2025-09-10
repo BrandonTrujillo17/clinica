@@ -19,11 +19,11 @@ const Dashboard = () => {
                     Bienvenido {usuario.nombre} 👋
                 </h1>
 
-                {usuario.rol === "Paciente" && <DashboardPaciente />}
+                {usuario?.rol === "Paciente" && <DashboardPaciente />}
 
-                {usuario.rol === "Doctor" && <DashboardDoctor/>}
+                {usuario?.rol === "Doctor" && <DashboardDoctor/>}
 
-                {usuario.rol === "Admin" && (
+                {usuario?.rol === "Admin" && (
                     <div>
                         <button onClick={() => navigate("/usuarios")}>Gestión de usuarios</button>
                         <button onClick={() => navigate("/reportes")}>Reportes</button>
