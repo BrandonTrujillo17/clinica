@@ -46,7 +46,7 @@ const Modal: React.FC<ModalProps> = ({ message, type, onClose }) => {
                       ${
                         type === "error"
                           ? "border-red-500"
-                          : "border-green-500"
+                          : "border-[#1E8854]"
                       }
                       transform transition-all duration-500 ${
                         visible ? "scale-100" : "scale-95"
@@ -63,7 +63,7 @@ const Modal: React.FC<ModalProps> = ({ message, type, onClose }) => {
           {/* Título */}
           <h2
             className={`mb-2 text-base font-bold mt-2 ${
-              type === "error" ? "text-red-500" : "text-green-500"
+              type === "error" ? "text-red-500" : "text-[#1E8854]"
             }`}
           >
             {type === "error" ? "Error" : "Éxito"}
@@ -76,7 +76,7 @@ const Modal: React.FC<ModalProps> = ({ message, type, onClose }) => {
           <div className="h-1 w-full bg-gray-300 rounded-full overflow-hidden mt-3">
             <div
               className={`h-full ${
-                type === "error" ? "bg-red-500" : "bg-green-500"
+                type === "error" ? "bg-red-500" : "bg-[#1E8854]"
               }`}
               style={{ width: "100%", animation: "shrink 5s linear forwards" }}
             ></div>

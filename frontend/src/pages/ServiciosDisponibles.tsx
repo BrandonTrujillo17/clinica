@@ -30,10 +30,10 @@ const ServiciosDisponibles = () => {
         const data = await res.json();
         const serviciosMapeados: Servicio[] = data.map((s: any) => ({
           id: s.id,
-          nombre: s.nombre_servicio,
-          descripcion: s.descripcion_servicio,
-          precio: Number(s.costo_servicio),
-          comentarios: s.comentarios_adicionales,
+          nombre_servicio: s.nombre_servicio,
+          descripcion_servicio: s.descripcion_servicio,
+          costo_servicio: Number(s.costo_servicio),
+          comentarios_adicionales: s.comentarios_adicionales,
           medicos: s.medicos.filter((m: number | null) => m !== null), // eliminar null
         }));
         setServicios(serviciosMapeados);
@@ -50,7 +50,7 @@ const ServiciosDisponibles = () => {
   useEffect(() => {
     const fetchMedicos = async () => {
       try {
-        const res = await fetch("api/medicos");
+        const res = await fetch("api/medicos-disponibles");
         const data = await res.json()
         setMedicosDisponibles(data);
       } catch (error) {
@@ -62,7 +62,7 @@ const ServiciosDisponibles = () => {
 
   }, []);
 
-   const handleUpdate = async (updatedServicio: Servicio) => {
+  const handleUpdate = async (updatedServicio: Servicio) => {
     try {
       setLoading(true)
       const res = await fetch(`/api/actualizar-servicio/${updatedServicio.id}`, {
@@ -86,7 +86,6 @@ const ServiciosDisponibles = () => {
     } finally {
       setLoading(false)
     }
-
   };
 
   if (loading) return <div className="pt-85"><p className="text-center text-gray-500">Cargando servicios...</p></div>;

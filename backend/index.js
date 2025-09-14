@@ -118,7 +118,6 @@ app.get('/api/servicios', async (req, res) => {
     `;
     const resultado = await db.query(query); 
 
-    console.log(resultado)
     return res.status(200).json(resultado.rows)
   } catch (error) {
     console.error(error)
