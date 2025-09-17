@@ -2,10 +2,10 @@ import { useState, useEffect } from "react"
 
 interface Servicio {
     id?: number
-    nombre: string
-    descripcion: string
-    precio: number
-    comentarios?: string
+    nombre_servicio: string
+    descripcion_servicio: string
+    costo_servicio: number
+    comentarios_adicionales?: string
     medicos: number[]
 }
 
@@ -24,24 +24,24 @@ export default function RegistrarEditarServicio({
     medicosDisponibles,
     onSubmit,
 }: RegistrarEditarServicioProps) {
-    const [nombre, setNombre] = useState("")
-    const [descripcion, setDescripcion] = useState("")
-    const [precio, setPrecio] = useState<number | string>("")
-    const [comentarios, setComentarios] = useState("")
+    const [nombre_servicio, setNombre] = useState("")
+    const [descripcion_servicio, setDescripcion] = useState("")
+    const [costo_servicio, setCosto] = useState<number | string>("")
+    const [comentarios_adicionales, setComentarios] = useState("")
     const [medicos, setMedicos] = useState<number[]>([])
 
     // Si es edición, precargar datos
     useEffect(() => {
         if (servicio) {
-            setNombre(servicio.nombre)
-            setDescripcion(servicio.descripcion)
-            setPrecio(servicio.precio)
-            setComentarios(servicio.comentarios? servicio.comentarios : "")
+            setNombre(servicio.nombre_servicio)
+            setDescripcion(servicio.descripcion_servicio)
+            setCosto(servicio.costo_servicio)
+            setComentarios(servicio.comentarios_adicionales? servicio.comentarios_adicionales : "")
             setMedicos(servicio.medicos)
         } else {
             setNombre("")
             setDescripcion("")
-            setPrecio("")
+            setCosto("")
             setComentarios("")
             setMedicos([])
         }
@@ -56,10 +56,10 @@ export default function RegistrarEditarServicio({
     const handleSubmit = () => {
         onSubmit({
             id: servicio?.id,
-            nombre,
-            descripcion,
-            precio: Number(precio),
-            comentarios,
+            nombre_servicio,
+            descripcion_servicio,
+            costo_servicio: Number(costo_servicio),
+            comentarios_adicionales,
             medicos,
         })
         onClose()
@@ -78,31 +78,31 @@ export default function RegistrarEditarServicio({
 
                 <div className="space-y-4 ">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Nombre</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Nombre<span className="text-red-500">*</span></label>
                         <input
                             type="text"
                             className="w-full border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-[#1E8854] focus:border-[#1E8854] focus:z-10 p-2"
-                            value={nombre}
+                            value={nombre_servicio}
                             onChange={(e) => setNombre(e.target.value)}
                         />
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Descripción</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Descripción<span className="text-red-500">*</span></label>
                         <textarea
                             className="w-full border border-gray-300 shadow-sm focus:outline-none  focus:ring-[#1E8854] focus:border-[#1E8854] rounded-lg focus:z-10 p-2"
-                            value={descripcion}
+                            value={descripcion_servicio}
                             onChange={(e) => setDescripcion(e.target.value)}
                         />
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Precio</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Precio<span className="text-red-500">*</span></label>
                         <input
                             type="number"
                             className="w-full border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-[#1E8854] focus:border-[#1e8854] focus:z-10 p-2"
-                            value={precio}
-                            onChange={(e) => setPrecio(e.target.value)}
+                            value={costo_servicio}
+                            onChange={(e) => setCosto(e.target.value)}
                         />
                     </div>
 
@@ -110,13 +110,13 @@ export default function RegistrarEditarServicio({
                         <label className="block text-sm font-medium text-gray-700 mb-2">Comentarios adicionales</label>
                         <textarea
                             className="w-full border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-[#1E8854] focus:border-[#1E8854] focus:z-10  p-2"
-                            value={comentarios}
+                            value={comentarios_adicionales}
                             onChange={(e) => setComentarios(e.target.value)}
                         />
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700">Médicos</label>
+                        <label className="block text-sm font-medium text-gray-700">Médicos<span className="text-red-500">*</span></label>
                         <div className="mt-2 max-h-20 border border-gray-300 shadow-sm rounded-lg grid grid-cols-2 overflow-y-auto space-y-2 p-2">
                             {medicosDisponibles.map((m) => (
                                 <label key={m.id} className="flex items-center space-x-2">

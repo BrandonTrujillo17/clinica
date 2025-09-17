@@ -53,7 +53,7 @@ const RegisterPage = () => {
         setModal({ message: data.message, type: "success" })
         setTimeout(() => navigate("/login"), 3000)
       } else {
-        setModal({ message: data.message, type: "error" })
+        setModal({ message: data.error, type: "error" })
       }
     } catch (error) {
       console.log(error)

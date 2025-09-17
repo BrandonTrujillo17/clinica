@@ -97,7 +97,7 @@ app.post('/api/registro/paciente', async (req, res) => {
 //endpoint para obtener servicios
 app.get('/api/servicios', async (req, res) => {
   try {
-     const query = `
+    const query = `
       SELECT 
         s.id,
         s.nombre_servicio,
@@ -116,7 +116,7 @@ app.get('/api/servicios', async (req, res) => {
         s.comentarios_adicionales
       ORDER BY s.nombre_servicio ASC;
     `;
-    const resultado = await db.query(query); 
+    const resultado = await db.query(query);
 
     return res.status(200).json(resultado.rows)
   } catch (error) {
@@ -127,7 +127,7 @@ app.get('/api/servicios', async (req, res) => {
 //endpoint para actualizar servicios
 app.put("/api/actualizar-servicio/:id", async (req, res) => {
   const { id } = req.params;
-  const { nombre, descripcion, precio, comentarios, medicos } = req.body;
+  const { nombre_servicio, descripcion_servicio, costo_servicio, comentarios_adicionales, medicos } = req.body;
 
   try {
     await db.query(
@@ -137,20 +137,64 @@ app.put("/api/actualizar-servicio/:id", async (req, res) => {
            costo_servicio = $3,
            comentarios_adicionales = $4
        WHERE id = $5`,
-      [nombre, descripcion, precio, comentarios, id]
+      [nombre_servicio, descripcion_servicio, costo_servicio, comentarios_adicionales, id]
     );
 
     await db.query(`DELETE FROM doctores_servicios WHERE id_servicio = $1`, [id]);
 
     if (medicos.length > 0) {
-      const values = medicos.map(m => `(${m}, ${id})`).join(",");
-      await db.query(`INSERT INTO doctores_servicios (id_doctor, id_servicio) VALUES ${values}`);
+      const values = [];
+      const placeholders = medicos
+        .map((m, i) => {
+          values.push(m, id); // agregamos doctor y servicio
+          const idx = i * 2; // índice para los placeholders
+          return `($${idx + 1}, $${idx + 2})`;
+        })
+        .join(",");
+
+      const query = `
+        INSERT INTO doctores_servicios (id_doctor, id_servicio)
+        VALUES ${placeholders}
+      `;
+
+      await db.query(query, values);
     }
 
     res.status(200).json({ message: "Servicio actualizado correctamente" });
   } catch (error) {
-    console.error(error);
+    console.error("Error en actualizar servicio: " + error);
     res.status(500).json({ error: "Error al actualizar el servicio" });
+  }
+});
+
+app.post("/api/registrar-servicio", async (req, res) => {
+  const { nombre_servicio, descripcion_servicio, costo_servicio, comentarios_adicionales, medicos } = req.body
+  try {
+    const resultadoServicio = await db.query(`INSERT INTO servicios (nombre_servicio, descripcion_servicio, costo_servicio, comentarios_adicionales)
+      VALUES ($1, $2, $3, $4) RETURNING id`, [nombre_servicio, descripcion_servicio, costo_servicio, (comentarios_adicionales != "" ? comentarios_adicionales : null)]);
+
+    const idServicioRegistrado = resultadoServicio.rows[0].id;
+
+    const values = [];
+    const placeholders = medicos
+      .map((m, i) => {
+        values.push(m, idServicioRegistrado); // agregamos doctor y servicio
+        const idx = i * 2; // índice para los placeholders
+        return `($${idx + 1}, $${idx + 2})`;
+      })
+      .join(",");
+
+    const query = `
+      INSERT INTO doctores_servicios (id_doctor, id_servicio)
+      VALUES ${placeholders}
+    `;
+
+    await db.query(query, values);
+    res.status(200).json({ message: "Servicio registrado" });
+
+  } catch (error) {
+    console.log("Error en registrar servicio: " + error)
+    res.status(500).json({ error: "Error al registrar servicio" })
   }
 });
 
@@ -182,7 +226,7 @@ app.get("/api/medicos-disponibles", async (req, res) => {
     res.json(resultado.rows);
   } catch (error) {
     console.log("Error al obtener médicos: ", error)
-    res.status(500).json({error: "Error al obtener médicos"})
+    res.status(500).json({ error: "Error al obtener médicos" })
   }
 })
 //endpoint para registrar doctores
