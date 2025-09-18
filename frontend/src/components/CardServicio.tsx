@@ -14,9 +14,10 @@ interface CardServicioProps {
   medicos: number[];
   medicosDisponibles: { id: number, nombre: string }[];
   onUpdate: (updatedServicio: Servicio) => void;
+  onDelete: (id: number) => void;
 }
 
-const CardServicio: React.FC<CardServicioProps> = ({ id, nombre_servicio, descripcion_servicio, costo_servicio, comentarios_adicionales, medicos, medicosDisponibles, onUpdate }) => {
+const CardServicio: React.FC<CardServicioProps> = ({ id, nombre_servicio, descripcion_servicio, costo_servicio, comentarios_adicionales, medicos, medicosDisponibles, onUpdate, onDelete }) => {
   const { usuario } = useAuth();
   const [open, setOpen] = useState(false);
   const [openConfirm, setOpenConfirm] = useState(false);
@@ -74,9 +75,8 @@ const CardServicio: React.FC<CardServicioProps> = ({ id, nombre_servicio, descri
               message={`¿Seguro que quieres eliminar el servicio "${nombre_servicio}"?`}
               onCancel={() => setOpenConfirm(false)}
               onConfirm={() => {
-                console.log("Eliminar servicio:", nombre_servicio);
+                onDelete(id);
                 setOpenConfirm(false);
-                // Aquí puedes llamar tu función que hace el DELETE al backend
               }}
             />
           </div>

@@ -43,7 +43,7 @@ const ServiciosDisponibles = () => {
         setServicios(serviciosMapeados);
       } catch (error) {
         console.error("Error al obtener los servicios:", error);
-        setModal({message:"Error al obtener servicios", type:"error"})
+        setModal({ message: "Error al obtener servicios", type: "error" })
       } finally {
         setLoading(false);
       }
@@ -61,8 +61,8 @@ const ServiciosDisponibles = () => {
         setMedicosDisponibles(data);
       } catch (error) {
         console.log("Error al obtener los médicos: ", error)
-        setModal({message:"Error al obtener médicos", type:"error"})
-      }finally{
+        setModal({ message: "Error al obtener médicos", type: "error" })
+      } finally {
         setLoading(false);
       }
     }
@@ -139,10 +139,32 @@ const ServiciosDisponibles = () => {
     } catch (error) {
       console.error("Error al registrar servicio:", error);
       setModal({ message: "Error al registrar el servicio", type: 'error' })
-    } finally{
+    } finally {
       setLoading(false)
     }
   };
+
+  const handleDelete = async (id: number) => {
+    try {
+      const res = await fetch(`/api/eliminar-servicio/${id}`, {
+        method: "DELETE",
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        setModal({ message: data.message, type: "success" });
+        const serviciosRes = await fetch("/api/servicios");
+        const serviciosData = await serviciosRes.json();
+        setServicios(serviciosData);
+      } else {
+        setModal({ message: data.error, type: "error" });
+      }
+    } catch (error) {
+      console.error("Error al eliminar servicio:", error);
+      setModal({ message: "Error al eliminar el servicio", type: "error" });
+    }
+  };
+
 
 
   if (loading) return <div className="pt-85"><p className="text-center text-gray-500">Cargando servicios...</p></div>;
@@ -180,6 +202,7 @@ const ServiciosDisponibles = () => {
               medicos={servicio.medicos}
               medicosDisponibles={medicosDisponibles}
               onUpdate={handleUpdate}
+              onDelete={handleDelete}
             />
           ))}
         </div>

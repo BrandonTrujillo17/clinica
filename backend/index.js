@@ -166,7 +166,7 @@ app.put("/api/actualizar-servicio/:id", async (req, res) => {
     res.status(500).json({ error: "Error al actualizar el servicio" });
   }
 });
-
+//endpoint para registrar un servicio
 app.post("/api/registrar-servicio", async (req, res) => {
   const { nombre_servicio, descripcion_servicio, costo_servicio, comentarios_adicionales, medicos } = req.body
   try {
@@ -195,6 +195,19 @@ app.post("/api/registrar-servicio", async (req, res) => {
   } catch (error) {
     console.log("Error en registrar servicio: " + error)
     res.status(500).json({ error: "Error al registrar servicio" })
+  }
+});
+//endpoint para eliminar un servicio
+app.delete("/api/eliminar-servicio/:id", async (req, res) => {
+  const { id } = req.params
+  try {
+    await db.query("DELETE FROM doctores_servicios WHERE id = $1", [id]);
+    await db.query("DELETE FROM servicios where id = $1", [id]);
+
+    res.status(200).json({message: "Servicio eliminado"});
+  } catch (error) {
+    console.log("Error al eliminar servicio: " + error);
+    res.status(500).json({error: "Error al eliminar el servicio solicitado"});
   }
 });
 
